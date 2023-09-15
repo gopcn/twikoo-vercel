@@ -32,4 +32,5 @@ jobs:
       - name: Commit and push changes if necessary
         run: |
           git add .
-          git diff --quiet --exit-code || git commit -m "${{ steps.get-latest-release.outputs.release }}" && git push
+          git diff-index --quiet HEAD || git commit -m "Update package.json to ${{ steps.get-latest-release.outputs.release }}"
+          git push
