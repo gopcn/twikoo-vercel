@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get latest release
         id: get-latest-release
@@ -21,7 +21,7 @@ jobs:
           excludes: prerelease, draft
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Replace content in README
+      - name: Update package.json with latest release version
         run: sed -i "s/[0-9.]\+/"${{ steps.get-latest-release.outputs.release }}"/" package.json
 
       - name: Configure Git
@@ -29,10 +29,7 @@ jobs:
           git config --global user.name "gopcn"
           git config --global user.email "121377609+gopcn@users.noreply.github.com"
 
-      - name: Commit changes
+      - name: Commit and push changes if necessary
         run: |
-          git add .
-          git diff-index --quiet HEAD || git commit -m "${{ steps.get-latest-release.outputs.release }}"
-
-      - name: Push changes
-        run: git push
+          git add package.json
+          git diff --quiet --exit-code || git commit -m "Update package.json to ${{ steps.get-latest-release.outputs.release }}" && git push
